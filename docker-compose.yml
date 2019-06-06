@@ -1,0 +1,42 @@
+version: '3.0'
+services:
+  mysql1:
+    image: mysql:5.7
+    restart: always
+    container_name: mysql1
+    environment:
+      MYSQL_DATABASE: 'mydb'
+      MYSQL_ROOT_PASSWORD: 'admin123'
+      MYSQL_USER: 'dbuser'
+      MYSQL_PASSWORD: 'admin123'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+  app:
+    build: .
+    container_name: chatapp
+    ports:
+     - 8000:8000
+    links:
+     - mysql1
+    expose:
+     - 8000
+    volumes:
+     - /home/ubuntu/ChatApplicationDeploy/chatapplication:/usr/src/chatapp
+    depends_on:
+     - mysql1
+
+  nginx1:
+    image: nginx
+    container_name: nginx1
+    ports:
+     - 80:80
+    expose:
+     - 80
+    links:
+     - app 
+    depends_on:
+     - app
+    volumes:
+     - /home/ubuntu/nginx-server:/etc/nginx/conf.d/
